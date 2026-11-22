@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.ipynb_checkpoints/
+.mcp.json
+*.env
+.env
+prof/
+results/**/_raw/
