@@ -1,0 +1,29 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1795364084.384068   21388 pjrt_api.cc:119] GetPjrtApi was found for TPU at /home/Tinevimbo/venv/lib/python3.12/site-packages/libtpu/libtpu.so
+I0000 00:00:1795364085.658547   21388 device_rt.cc:178] PjRt runtime initialization deferred for tpu
+Successfully renamed PrivateUse1 backend to 'tpu'. Device: device(type='tpu')
+Registered Python module for 'tpu'.
+Device type: tpu, Device index: default
+Initializing TPU distributed runtime
+I0000 00:00:1795364085.660097   21388 libtpu_version.cc:63] Setting libtpu version to: 0.0.53.1
+I0000 00:00:1795364086.613229   21388 pjrt_api.cc:168] The PJRT plugin has PJRT API version 0.117. The framework PJRT API version is 0.117.
+I0000 00:00:1795364087.049111   21388 pjrt_c_api_client.cc:188] PjRtCApiClient created.
+/home/Tinevimbo/lab/batched_steering/device.py:42: UserWarning: //TorchTpu/ApiStage/ExperimentalApi// 'EagerMode' is experimental and subject to change: TPU eager execution mode configuration.
+  em = torch.tpu.EagerMode
+/home/Tinevimbo/lab/batched_steering/device.py:43: UserWarning: //TorchTpu/ApiStage/ExperimentalApi// set_eager_mode is experimental and subject to change: Context manager for setting the eager mode.
+  torch.tpu.set_eager_mode(em.DEFER_AND_FUSE if mode == "defer" else em.DEFER_NEVER)
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights:   0%|          | 1/311 [00:00<01:08,  4.52it/s]I0000 00:00:1795364088.387983   21559 compilation_cache_utils.cc:220] Tier-3 compilation cache root directory: 
+I0000 00:00:1795364088.388013   21559 tier2_compilation_cache.cc:81] Tier-2 compilation cache is disabled for world size 1.
+Loading weights:   2%|▏         | 5/311 [00:00<00:26, 11.58it/s]Loading weights:   5%|▌         | 17/311 [00:00<00:07, 39.71it/s]Loading weights:  11%|█         | 33/311 [00:00<00:03, 71.86it/s]Loading weights:  29%|██▊       | 89/311 [00:00<00:01, 207.13it/s]Loading weights:  39%|███▉      | 121/311 [00:00<00:00, 236.37it/s]Loading weights:  48%|████▊     | 149/311 [00:01<00:00, 209.63it/s]Loading weights:  65%|██████▍   | 201/311 [00:01<00:00, 284.08it/s]Loading weights:  82%|████████▏ | 256/311 [00:01<00:00, 346.30it/s]Loading weights: 100%|██████████| 311/311 [00:01<00:00, 234.74it/s]
+[setup] device=tpu dtype=torch.float32 eager=strict layers=28 d=1024
+/home/Tinevimbo/venv/lib/python3.12/site-packages/torch/nn/modules/module.py:1798: FutureWarning: `past_key_values` is deprecated and will be removed in version 5.40.0 for `Qwen3ForCausalLM.forward`. Use `cache` instead.
+  return forward_call(*args, **kwargs)
+[m2] {'rows': 264, 'match_rate': 1.0, 'loop_s': 61.2324, 'batched_s': 13.9534, 'speedup': 4.3883}
+[m2] PASS
+I0000 00:00:1795364187.302052   21388 compilation_cache.cc:356] Compilation cache evicted.
+I0000 00:00:1795364187.302083   21388 compilation_cache.cc:211] CompilationCache final stats: num_cache_reqs=1588944
+num_cache_hits=1588255 {99.9%}
+num_compilations=689
+num_unbounded_dynamic_hits=0
+peak_compilation_memory_bytes=unknown
+

@@ -1,0 +1,54 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1795446610.211489    6394 pjrt_api.cc:119] GetPjrtApi was found for TPU at /home/Tinevimbo/venv/lib/python3.12/site-packages/libtpu/libtpu.so
+I0000 00:00:1795446611.489661    6394 device_rt.cc:178] PjRt runtime initialization deferred for tpu
+Successfully renamed PrivateUse1 backend to 'tpu'. Device: device(type='tpu')
+Registered Python module for 'tpu'.
+Device type: tpu, Device index: default
+Initializing TPU distributed runtime
+I0000 00:00:1795446611.491130    6394 libtpu_version.cc:63] Setting libtpu version to: 0.0.53.1
+I0000 00:00:1795446612.441758    6394 pjrt_api.cc:168] The PJRT plugin has PJRT API version 0.117. The framework PJRT API version is 0.117.
+I0000 00:00:1795446612.894604    6394 pjrt_c_api_client.cc:188] PjRtCApiClient created.
+/home/Tinevimbo/lab/batched_steering/device.py:42: UserWarning: //TorchTpu/ApiStage/ExperimentalApi// 'EagerMode' is experimental and subject to change: TPU eager execution mode configuration.
+  em = torch.tpu.EagerMode
+/home/Tinevimbo/lab/batched_steering/device.py:43: UserWarning: //TorchTpu/ApiStage/ExperimentalApi// set_eager_mode is experimental and subject to change: Context manager for setting the eager mode.
+  torch.tpu.set_eager_mode(em.DEFER_AND_FUSE if mode == "defer" else em.DEFER_NEVER)
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights:   0%|          | 1/311 [00:00<01:09,  4.48it/s]I0000 00:00:1795446614.230905    6565 compilation_cache_utils.cc:220] Tier-3 compilation cache root directory: 
+I0000 00:00:1795446614.230937    6565 tier2_compilation_cache.cc:81] Tier-2 compilation cache is disabled for world size 1.
+Loading weights:   2%|▏         | 5/311 [00:00<00:27, 11.25it/s]Loading weights:   5%|▌         | 17/311 [00:00<00:07, 38.01it/s]Loading weights:  11%|█         | 33/311 [00:00<00:04, 64.87it/s]Loading weights:  19%|█▊        | 58/311 [00:00<00:02, 107.96it/s]Loading weights:  58%|█████▊    | 179/311 [00:00<00:00, 363.96it/s]Loading weights:  70%|███████   | 219/311 [00:01<00:00, 349.24it/s]Loading weights:  84%|████████▎ | 260/311 [00:01<00:00, 342.59it/s]Loading weights: 100%|██████████| 311/311 [00:01<00:00, 239.37it/s]
+[setup] device=tpu dtype=torch.float32 eager=strict layers=28 d=1024
+[e2] tomato direction in 3.8s, norms L6/L18: 4.3 / 7.8
+/home/Tinevimbo/venv/lib/python3.12/site-packages/torch/nn/modules/module.py:1798: FutureWarning: `past_key_values` is deprecated and will be removed in version 5.40.0 for `Qwen3ForCausalLM.forward`. Use `cache` instead.
+  return forward_call(*args, **kwargs)
+[e2] map chunk 10
+[e2] map chunk 20
+[e2] map chunk 30
+[e2] map chunk 40
+[e2] map: {'configs': 336, 'rows': 12096, 'generate_s': 274.4784, 'configs_per_s': 1.2241}
+[e2] search chunk 50
+[e2] search chunk 60
+[e2] search chunk 70
+[e2] search chunk 80
+[e2] search chunk 90
+[e2] search chunk 100
+[e2] search chunk 110
+[e2] search chunk 120
+[e2] search chunk 130
+[e2] search chunk 140
+[e2] search chunk 150
+[e2] search chunk 160
+[e2] search chunk 170
+[e2] search chunk 180
+[e2] search: {'configs': 1000, 'rows': 36000, 'generate_s': 795.5986, 'configs_per_s': 1.2569}
+[e2] test chunk 190
+[e2] by hand (5 layers x 4 round strengths)   L18 x10.0 spread1: choose 0.44 -> test 0.33
+[e2] full map best                            L26 x6.0 spread1: choose 0.53 -> test 0.25
+[e2] search best, first 60 trials             L14 x11.5543 spread1: choose 0.42 -> test 0.25
+[e2] search best, 1000 trials                 L17 x12.2984 spread2: choose 0.56 -> test 0.42
+[e2] done
+I0000 00:00:1795447696.359744    6394 compilation_cache.cc:356] Compilation cache evicted.
+I0000 00:00:1795447696.359777    6394 compilation_cache.cc:211] CompilationCache final stats: num_cache_reqs=19294505
+num_cache_hits=19294134 {99.9%}
+num_compilations=371
+num_unbounded_dynamic_hits=0
+peak_compilation_memory_bytes=unknown
+

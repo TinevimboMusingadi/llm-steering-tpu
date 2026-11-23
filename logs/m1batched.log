@@ -1,0 +1,37 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1795363458.836723    9184 pjrt_api.cc:119] GetPjrtApi was found for TPU at /home/Tinevimbo/venv/lib/python3.12/site-packages/libtpu/libtpu.so
+I0000 00:00:1795363460.136155    9184 device_rt.cc:178] PjRt runtime initialization deferred for tpu
+Successfully renamed PrivateUse1 backend to 'tpu'. Device: device(type='tpu')
+Registered Python module for 'tpu'.
+Device type: tpu, Device index: default
+Initializing TPU distributed runtime
+I0000 00:00:1795363460.137509    9184 libtpu_version.cc:63] Setting libtpu version to: 0.0.53.1
+I0000 00:00:1795363461.097866    9184 pjrt_api.cc:168] The PJRT plugin has PJRT API version 0.117. The framework PJRT API version is 0.117.
+I0000 00:00:1795363461.547312    9184 pjrt_c_api_client.cc:188] PjRtCApiClient created.
+/home/Tinevimbo/lab/batched_steering/device.py:42: UserWarning: //TorchTpu/ApiStage/ExperimentalApi// 'EagerMode' is experimental and subject to change: TPU eager execution mode configuration.
+  em = torch.tpu.EagerMode
+/home/Tinevimbo/lab/batched_steering/device.py:43: UserWarning: //TorchTpu/ApiStage/ExperimentalApi// set_eager_mode is experimental and subject to change: Context manager for setting the eager mode.
+  torch.tpu.set_eager_mode(em.DEFER_AND_FUSE if mode == "defer" else em.DEFER_NEVER)
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]I0000 00:00:1795363462.637783    9359 compilation_cache_utils.cc:220] Tier-3 compilation cache root directory: 
+I0000 00:00:1795363462.637816    9359 tier2_compilation_cache.cc:81] Tier-2 compilation cache is disabled for world size 1.
+Loading weights:   0%|          | 1/311 [00:00<01:19,  3.89it/s]Loading weights:   5%|▌         | 16/311 [00:00<00:05, 55.16it/s]Loading weights:  10%|█         | 32/311 [00:00<00:03, 84.25it/s]Loading weights:  15%|█▌        | 48/311 [00:00<00:02, 107.51it/s]Loading weights:  40%|███▉      | 123/311 [00:00<00:00, 279.74it/s]Loading weights:  53%|█████▎    | 166/311 [00:00<00:00, 322.66it/s]Loading weights:  68%|██████▊   | 210/311 [00:00<00:00, 331.64it/s]Loading weights:  83%|████████▎ | 257/311 [00:01<00:00, 365.27it/s]Loading weights: 100%|██████████| 311/311 [00:01<00:00, 286.37it/s]
+[setup] device=tpu dtype=torch.float32 eager=strict layers=28 d=1024
+/home/Tinevimbo/venv/lib/python3.12/site-packages/torch/nn/modules/module.py:1798: FutureWarning: `past_key_values` is deprecated and will be removed in version 5.40.0 for `Qwen3ForCausalLM.forward`. Use `cache` instead.
+  return forward_call(*args, **kwargs)
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]Loading weights: 100%|██████████| 105/105 [00:00<00:00, 29744.83it/s]
+[m1] strength curve: {-3: 0.6656, -2: 0.8346, -1: 0.7731, 0: 0.5251, 1: 0.196, 2: -0.1958, 3: -0.0155, 4: -0.0318} 
+     reference     : {-3: 0.728, -2: 0.785, -1: 0.747, 0: 0.566, 1: 0.224, 2: -0.154, 3: -0.038, 4: -0.012}
+[m1] controls: {'random direction': 0.5673, 'shuffled labels': 0.4554} | reference {'random direction': 0.502, 'shuffled labels': 0.366}
+[m1] damage at 2x: {'facts_before': 0.85, 'facts_after': 0.65, 'kl': 0.361} | reference {'facts_before': 0.85, 'facts_after': 0.65, 'kl': 0.358}
+[m1] layer sweep: {2: 0.4882, 4: 0.3524, 6: 0.429, 8: 0.1101, 10: -0.0155, 12: -0.1662, 14: -0.2302, 16: -0.3617, 18: -0.2761, 20: -0.3023, 22: 0.0886, 24: -0.0496, 26: 0.1281} 
+     reference  : {2: 0.374, 8: 0.088, 10: -0.201, 12: -0.063, 14: -0.268, 18: -0.293, 20: -0.385, 24: 0.221}
+[m1] timing: {'directions_s': 2.1222, 'generate_s': 9.9224, 'layer_sweep_s': 6.5409, 'score_s': 4.5236, 'configs': 23, 'rows': 396, 'configs_per_s': 1.397}
+[m1] trend reproduced: True
+I0000 00:00:1795363490.536184    9184 compilation_cache.cc:356] Compilation cache evicted.
+I0000 00:00:1795363490.536239    9184 compilation_cache.cc:211] CompilationCache final stats: num_cache_reqs=250777
+num_cache_hits=250306 {99.8%}
+num_compilations=471
+num_unbounded_dynamic_hits=0
+peak_compilation_memory_bytes=unknown
+

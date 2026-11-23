@@ -125,7 +125,9 @@ class SingleSteer:
         def fn(m, i, out):
             h, pack = _split(out)
             rr = r.to(h.device, h.dtype)
-            return pack(h - strength * (h @ rr)[..., None] * rr)
+            # elementwise multiply + sum, not h @ rr: on TPU an fp32 matmul runs at bf16 input precision by default,
+            # which drifts from the batched hook over 28 blocks (seen in M2: 5/264 rows differed late in the text)
+            return pack(h - strength * (h * rr).sum(-1, keepdim=True) * rr)
         for l in (which or range(1, len(self.layers) + 1)):
             self.handles.append(self.layers[l - 1].register_forward_hook(fn))
         return self

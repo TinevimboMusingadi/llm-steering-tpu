@@ -44,7 +44,14 @@ rows = [(c.name, i, x == y) for c, xs, ys in zip(configs, a, b) for i, (x, y) in
 match = sum(m for *_, m in rows) / len(rows)
 mismatches = [{"config": n, "prompt": test[i], "loop": a[ci][i], "batched": b[ci][i]}
               for ci, (c, xs, ys) in enumerate(zip(configs, a, b)) for i, (n, x, y) in enumerate(zip([c.name] * len(xs), xs, ys)) if x != y]
-res = {"rows": len(rows), "match_rate": r3(match), "loop_s": r3(t_loop.seconds), "batched_s": r3(t_batch.seconds),
+per_config = {c.name: r3(sum(x == y for x, y in zip(xs, ys)) / len(xs)) for c, xs, ys in zip(configs, a, b)}
+first_diff = {}
+for c, xs, ys in zip(configs, a, b):
+    for x, y in zip(xs, ys):
+        if x != y:   # how far into the reply the two versions agree (characters)
+            first_diff.setdefault(c.name, []).append(next((k for k, (p, q) in enumerate(zip(x, y)) if p != q), min(len(x), len(y))))
+res = {"rows": len(rows), "match_rate": r3(match), "per_config_match": per_config,
+       "mean_chars_before_divergence": {k: r3(sum(v) / len(v)) for k, v in first_diff.items()}, "loop_s": r3(t_loop.seconds), "batched_s": r3(t_batch.seconds),
        "speedup": r3(t_loop.seconds / max(1e-9, t_batch.seconds)), "mismatches": mismatches[:10]}
 print("[m2]", {k: v for k, v in res.items() if k != "mismatches"})
 save_json("m2_batched_vs_loop", run_name(args, f"m2_{lm.device.type}_{args.dtype}_{args.eager}"), {"args": vars(args), **res})

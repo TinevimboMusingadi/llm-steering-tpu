@@ -1,0 +1,32 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1795363327.239865    4701 pjrt_api.cc:119] GetPjrtApi was found for TPU at /home/Tinevimbo/venv/lib/python3.12/site-packages/libtpu/libtpu.so
+I0000 00:00:1795363328.550625    4701 device_rt.cc:178] PjRt runtime initialization deferred for tpu
+Successfully renamed PrivateUse1 backend to 'tpu'. Device: device(type='tpu')
+Registered Python module for 'tpu'.
+Device type: tpu, Device index: default
+Initializing TPU distributed runtime
+I0000 00:00:1795363328.552087    4701 libtpu_version.cc:63] Setting libtpu version to: 0.0.53.1
+I0000 00:00:1795363329.650830    4701 pjrt_api.cc:168] The PJRT plugin has PJRT API version 0.117. The framework PJRT API version is 0.117.
+I0000 00:00:1795363330.104703    4701 pjrt_c_api_client.cc:188] PjRtCApiClient created.
+/home/Tinevimbo/lab/batched_steering/device.py:42: UserWarning: //TorchTpu/ApiStage/ExperimentalApi// 'EagerMode' is experimental and subject to change: TPU eager execution mode configuration.
+  em = torch.tpu.EagerMode
+/home/Tinevimbo/lab/batched_steering/device.py:43: UserWarning: //TorchTpu/ApiStage/ExperimentalApi// set_eager_mode is experimental and subject to change: Context manager for setting the eager mode.
+  torch.tpu.set_eager_mode(em.DEFER_AND_FUSE if mode == "defer" else em.DEFER_NEVER)
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]I0000 00:00:1795363343.830729    4883 compilation_cache_utils.cc:220] Tier-3 compilation cache root directory: 
+I0000 00:00:1795363343.830759    4883 tier2_compilation_cache.cc:81] Tier-2 compilation cache is disabled for world size 1.
+Loading weights:   2%|▏         | 5/311 [00:00<00:19, 15.70it/s]Loading weights:   5%|▌         | 17/311 [00:00<00:06, 47.50it/s]Loading weights:  11%|█         | 33/311 [00:00<00:03, 80.91it/s]Loading weights:  30%|███       | 94/311 [00:00<00:00, 234.77it/s]Loading weights:  40%|████      | 125/311 [00:00<00:00, 245.65it/s]Loading weights:  50%|████▉     | 154/311 [00:00<00:00, 190.56it/s]Loading weights:  57%|█████▋    | 178/311 [00:01<00:00, 179.72it/s]Loading weights:  74%|███████▍  | 231/311 [00:01<00:00, 247.74it/s]Loading weights:  93%|█████████▎| 289/311 [00:01<00:00, 323.46it/s]Loading weights: 100%|██████████| 311/311 [00:01<00:00, 228.16it/s]
+[setup] device=tpu dtype=torch.float32 eager=strict layers=28 d=1024
+/home/Tinevimbo/venv/lib/python3.12/site-packages/torch/nn/modules/module.py:1798: FutureWarning: `past_key_values` is deprecated and will be removed in version 5.40.0 for `Qwen3ForCausalLM.forward`. Use `cache` instead.
+  return forward_call(*args, **kwargs)
+[m0] baseline: A dog is a loyal companion that always knows the right place to play.   A dog is known for its intelligence and ability 
+[m0] sad 2x  : A dog is a loyal companion who always knows where to go.   A dog is a creature that can't be left alone.
+[m0] {'first_generate_s': 5.1481, 'second_generate_s': 3.6989, 'deterministic': True, 'read_hook_shape': (4, 32, 1024), 'zero_push_identical': True, 'push_changes_text': True, 'sad_norm_L12': 6.6648, 'generate_s_strict': 3.8561, 'generate_s_defer': 4.0483}
+[m0] PASS
+I0000 00:00:1795363383.902500    4701 compilation_cache.cc:356] Compilation cache evicted.
+I0000 00:00:1795363383.902544    4701 compilation_cache.cc:211] CompilationCache final stats: num_cache_reqs=731392
+num_cache_hits=731006 {99.9%}
+num_compilations=386
+num_unbounded_dynamic_hits=0
+peak_compilation_memory_bytes=unknown
+

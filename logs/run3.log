@@ -1,0 +1,47 @@
+STEP_START e1test 15:08:07 :: python experiments/e1_layer_grid.py --topic-set test --layers 8,12,14,16,17,18,20 --strengths 1,1.5,2,3 --tag test
+STEP_END e1test OK 120s
+[e1] sad: {'configs': 28, 'rows': 672, 'generate_s': 22.1081, 'damage_s': 3.0291, 'score_s': 10.7546, 'configs_per_s': 1.2665}
+[e1] random chunk 5
+[e1] random: {'configs': 28, 'rows': 672, 'generate_s': 19.9523, 'damage_s': 2.1842, 'score_s': 7.2662, 'configs_per_s': 1.4034}
+[e1] shuffled: {'configs': 28, 'rows': 672, 'generate_s': 20.7056, 'damage_s': 2.2068, 'score_s': 6.7539, 'configs_per_s': 1.3523}
+[e1] saddest setting with KL<=0.5: {'layer': 18, 'strength': 2.0, 'mood': -0.2569, 'facts': 0.7, 'kl': 0.426}
+[e1] total configs: 84
+STEP_START e2 15:10:07 :: python experiments/e2_tomato_map.py --batch 256
+STEP_END e2 OK 1090s
+[e2] search chunk 180
+[e2] search: {'configs': 1000, 'rows': 36000, 'generate_s': 795.5986, 'configs_per_s': 1.2569}
+[e2] test chunk 190
+[e2] by hand (5 layers x 4 round strengths)   L18 x10.0 spread1: choose 0.44 -> test 0.33
+[e2] full map best                            L26 x6.0 spread1: choose 0.53 -> test 0.25
+[e2] search best, first 60 trials             L14 x11.5543 spread1: choose 0.42 -> test 0.25
+[e2] search best, 1000 trials                 L17 x12.2984 spread2: choose 0.56 -> test 0.42
+[e2] done
+STEP_START e3 15:28:17 :: python experiments/e3_removal_search.py --batch 256
+STEP_END e3 OK 1105s
+[e3] random chunk 90
+[e3] random search: {'configs': 1000, 'rows': 12000, 'generate_s': 309.4193, 'damage_s': 71.5896, 'score_s': 140.2184, 'configs_per_s': 3.2319}
+[e3] winner_40: {'direction_layer': 14, 'strength': 0.6721, 'blocks': [4, 16], 'mood': 0.9008, 'facts': 0.85, 'kl': 0.0594} -> test mood +0.90
+[e3] winner_all: {'direction_layer': 13, 'strength': 0.3587, 'blocks': [6, 25], 'mood': 0.8242, 'facts': 0.825, 'kl': 0.0418} -> test mood +0.87
+[e3] hand-picked on test: mood +0.34 KL 0.024
+[e3] mean tune->test mood drop over 40 rechecked trials: +0.053
+[e3] random-direction search: best tune mood +0.01
+[e3] done
+STEP_START benchB 15:46:42 :: python experiments/bench_abc.py --eager strict
+STEP_END benchB OK 218s
+[bench] A loop: {'configs': 8, 'seconds': 36.7725, 'configs_per_s': 0.2176}
+[bench] B_batched_strict: {'configs': 8, 'rows': 96, 'seconds': 6.6736, 'configs_per_s': 1.1988, 'speedup_vs_loop': 5.509}
+[bench] B_batched_strict: {'configs': 32, 'rows': 384, 'seconds': 12.8593, 'configs_per_s': 2.4885, 'speedup_vs_loop': 11.436}
+[bench] B_batched_strict: {'configs': 64, 'rows': 768, 'seconds': 19.0247, 'configs_per_s': 3.364, 'speedup_vs_loop': 15.4598}
+[bench] B_batched_strict: {'configs': 128, 'rows': 1536, 'seconds': 38.9744, 'configs_per_s': 3.2842, 'speedup_vs_loop': 15.0929}
+[bench] B_batched_strict: {'configs': 224, 'rows': 2688, 'seconds': 72.6312, 'configs_per_s': 3.0841, 'speedup_vs_loop': 14.1731}
+[bench] done
+STEP_START benchC 15:50:20 :: python experiments/bench_abc.py --eager defer
+STEP_END benchC OK 219s
+[bench] A loop: {'configs': 8, 'seconds': 37.8323, 'configs_per_s': 0.2115}
+[bench] C_batched_defer: {'configs': 8, 'rows': 96, 'seconds': 6.2698, 'configs_per_s': 1.276, 'speedup_vs_loop': 6.0329}
+[bench] C_batched_defer: {'configs': 32, 'rows': 384, 'seconds': 12.8783, 'configs_per_s': 2.4848, 'speedup_vs_loop': 11.7485}
+[bench] C_batched_defer: {'configs': 64, 'rows': 768, 'seconds': 19.8867, 'configs_per_s': 3.2182, 'speedup_vs_loop': 15.2162}
+[bench] C_batched_defer: {'configs': 128, 'rows': 1536, 'seconds': 39.8573, 'configs_per_s': 3.2115, 'speedup_vs_loop': 15.1842}
+[bench] C_batched_defer: {'configs': 224, 'rows': 2688, 'seconds': 71.656, 'configs_per_s': 3.126, 'speedup_vs_loop': 14.7804}
+[bench] done
+ALL_DONE

@@ -1,0 +1,69 @@
+STEP_START m0 16:02:04 :: python experiments/m0_hello.py --tokens 48
+STEP_END m0 OK 61s
+[m0] baseline: A dog is a loyal companion that always knows the right place to play.   A dog is known for its intelligence and ability 
+[m0] sad 2x  : A dog is a loyal companion who always knows where to go.   A dog is a creature that can't be left alone.
+[m0] {'first_generate_s': 5.1481, 'second_generate_s': 3.6989, 'deterministic': True, 'read_hook_shape': (4, 32, 1024), 'zero_push_identical': True, 'push_changes_text': True, 'sad_norm_L12': 6.6648, 'generate_s_strict': 3.8561, 'generate_s_defer': 4.0483}
+[m0] PASS
+STEP_START m1loop 16:03:05 :: python experiments/m1_repro_sad.py --mode loop --no-layer-sweep
+STEP_END m1loop OK 71s
+[m1] strength curve: {-3: 0.783, -2: 0.803, -1: 0.7912, 0: 0.5879, 1: 0.1452, 2: -0.0518, 3: -0.0465, 4: -0.0035} 
+[m1] controls: {'random direction': 0.4468, 'shuffled labels': 0.5715} | reference {'random direction': 0.502, 'shuffled labels': 0.366}
+[m1] damage at 2x: {'facts_before': 0.85, 'facts_after': 0.65, 'kl': 0.361} | reference {'facts_before': 0.85, 'facts_after': 0.65, 'kl': 0.358}
+[m1] layer sweep: {} 
+[m1] timing: {'directions_s': 2.095, 'generate_s': 51.2756, 'layer_sweep_s': 0.0, 'score_s': 6.7239, 'configs': 10, 'rows': 240, 'configs_per_s': 0.195}
+[m1] trend reproduced: True
+STEP_START m1batched 16:04:16 :: python experiments/m1_repro_sad.py --mode batched --batch 256
+STEP_END m1batched OK 35s
+[m1] strength curve: {-3: 0.6656, -2: 0.8346, -1: 0.7731, 0: 0.5251, 1: 0.196, 2: -0.1958, 3: -0.0155, 4: -0.0318} 
+[m1] controls: {'random direction': 0.5673, 'shuffled labels': 0.4554} | reference {'random direction': 0.502, 'shuffled labels': 0.366}
+[m1] damage at 2x: {'facts_before': 0.85, 'facts_after': 0.65, 'kl': 0.361} | reference {'facts_before': 0.85, 'facts_after': 0.65, 'kl': 0.358}
+[m1] layer sweep: {2: 0.4882, 4: 0.3524, 6: 0.429, 8: 0.1101, 10: -0.0155, 12: -0.1662, 14: -0.2302, 16: -0.3617, 18: -0.2761, 20: -0.3023, 22: 0.0886, 24: -0.0496, 26: 0.1281} 
+[m1] timing: {'directions_s': 2.1222, 'generate_s': 9.9224, 'layer_sweep_s': 6.5409, 'score_s': 4.5236, 'configs': 23, 'rows': 396, 'configs_per_s': 1.397}
+[m1] trend reproduced: True
+STEP_START m2strict 16:04:51 :: python experiments/m2_batched_vs_loop.py --batch 256 --eager strict
+STEP_END m2strict FAIL 90s
+[m2] {'rows': 264, 'match_rate': 0.9811, 'loop_s': 46.3721, 'batched_s': 12.8593, 'speedup': 3.6061}
+/home/Tinevimbo/venv/lib/python3.12/site-packages/torch/nn/modules/module.py:1798: FutureWarning: `past_key_values` is deprecated and will be removed in version 5.40.0 for `Qwen3ForCausalLM.forward`. Use `cache` instead.
+  return forward_call(*args, **kwargs)
+[m2] {'rows': 264, 'match_rate': 0.9811, 'loop_s': 46.3721, 'batched_s': 12.8593, 'speedup': 3.6061}
+Traceback (most recent call last):
+  File "/home/Tinevimbo/lab/experiments/m2_batched_vs_loop.py", line 52, in <module>
+    assert match == 1.0, f"batched != loop in fp32 ({match:.3f}); first mismatch: {mismatches[:1]}"
+           ^^^^^^^^^^^^
+AssertionError: batched != loop in fp32 (0.981); first mismatch: [{'config': 'remove all', 'prompt': 'Write two sentences about a family dinner.', 'loop': 'A family dinner was filled with laughter and warm memories, while the laughter was shared with the warmth of family bonds.', 'batched': 'A family dinner was filled with laughter and warm memories, while the laughter was shared with the family.'}]
+I0000 00:00:1795363580.368239   11523 compilation_cache.cc:356] Compilation cache evicted.
+I0000 00:00:1795363580.368272   11523 compilation_cache.cc:211] CompilationCache final stats: num_cache_reqs=1587273
+num_cache_hits=1586591 {99.9%}
+num_compilations=682
+num_unbounded_dynamic_hits=0
+peak_compilation_memory_bytes=unknown
+
+STEP_START m2defer 16:06:21 :: python experiments/m2_batched_vs_loop.py --batch 256 --eager defer --tag defer
+STEP_END m2defer FAIL 98s
+[m2] {'rows': 264, 'match_rate': 0.9811, 'loop_s': 53.5011, 'batched_s': 14.2917, 'speedup': 3.7435}
+/home/Tinevimbo/venv/lib/python3.12/site-packages/torch/nn/modules/module.py:1798: FutureWarning: `past_key_values` is deprecated and will be removed in version 5.40.0 for `Qwen3ForCausalLM.forward`. Use `cache` instead.
+  return forward_call(*args, **kwargs)
+[m2] {'rows': 264, 'match_rate': 0.9811, 'loop_s': 53.5011, 'batched_s': 14.2917, 'speedup': 3.7435}
+Traceback (most recent call last):
+  File "/home/Tinevimbo/lab/experiments/m2_batched_vs_loop.py", line 52, in <module>
+    assert match == 1.0, f"batched != loop in fp32 ({match:.3f}); first mismatch: {mismatches[:1]}"
+           ^^^^^^^^^^^^
+AssertionError: batched != loop in fp32 (0.981); first mismatch: [{'config': 'remove all', 'prompt': 'Write two sentences about a family dinner.', 'loop': 'A family dinner was filled with laughter and warm memories, while the laughter was shared with the warmth of family bonds.', 'batched': 'A family dinner was filled with laughter and warm memories, while the laughter was shared with the family.'}]
+I0000 00:00:1795363678.715494   14842 compilation_cache.cc:356] Compilation cache evicted.
+I0000 00:00:1795363678.715542   14842 compilation_cache.cc:211] CompilationCache final stats: num_cache_reqs=1587272
+num_cache_hits=1586592 {99.9%}
+num_compilations=680
+num_unbounded_dynamic_hits=0
+peak_compilation_memory_bytes=unknown
+
+STEP_START e1 16:07:59 :: python experiments/e1_layer_grid.py --dtype bfloat16 --eager defer --batch 256
+STEP_END e1 OK 370s
+[e1] random chunk 15
+[e1] random chunk 20
+[e1] random: {'configs': 224, 'rows': 2688, 'generate_s': 76.9941, 'damage_s': 10.2056, 'score_s': 27.4354, 'configs_per_s': 2.9093}
+[e1] shuffled chunk 25
+[e1] shuffled chunk 30
+[e1] shuffled: {'configs': 224, 'rows': 2688, 'generate_s': 77.8399, 'damage_s': 10.2332, 'score_s': 27.1363, 'configs_per_s': 2.8777}
+[e1] saddest setting with KL<=0.5: {'layer': 21, 'strength': -1.0, 'mood': -0.3649, 'facts': 0.85, 'kl': 0.0518}
+[e1] total configs: 672
+ALL_DONE

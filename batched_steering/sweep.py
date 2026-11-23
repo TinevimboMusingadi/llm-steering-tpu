@@ -50,6 +50,14 @@ class Sweep:
     """Owns one BatchedSteer (+ Generator per prompt bucket) and runs configs x prompts through them."""
 
     def __init__(self, lm, batch_size: int = 256, n_new: int = 60, temperature: float = 0.5):
+        import os
+        if (lm.device.type == "tpu" and lm.dtype == torch.bfloat16 and batch_size > 128
+                and not os.environ.get("STEER_ALLOW_BIG_BF16")):
+            # TorchTPU 0.2 / torch 2.15, v5e: with bf16 activations, rows >= 128 of a steered batch whose rows have
+            # different padding come out corrupted (rows 0-127 exact; fp32 at 256 exact; batch 128 exact).
+            # See docs/LOG.md 2026-11-22. Set STEER_ALLOW_BIG_BF16=1 to reproduce.
+            print(f"[sweep] bf16 on TPU: capping batch {batch_size} -> 128 (known issue, docs/LOG.md)", flush=True)
+            batch_size = 128
         self.lm, self.B, self.N, self.temperature = lm, batch_size, n_new, temperature
         self.steer = BatchedSteer(lm.layers, batch_size, lm.d_model, lm.device)
         self.steer.enabled = False          # hooks only act inside this Sweep's own calls

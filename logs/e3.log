@@ -1,0 +1,46 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1795447699.749548    9526 pjrt_api.cc:119] GetPjrtApi was found for TPU at /home/Tinevimbo/venv/lib/python3.12/site-packages/libtpu/libtpu.so
+I0000 00:00:1795447701.036162    9526 device_rt.cc:178] PjRt runtime initialization deferred for tpu
+Successfully renamed PrivateUse1 backend to 'tpu'. Device: device(type='tpu')
+Registered Python module for 'tpu'.
+Device type: tpu, Device index: default
+Initializing TPU distributed runtime
+I0000 00:00:1795447701.037642    9526 libtpu_version.cc:63] Setting libtpu version to: 0.0.53.1
+I0000 00:00:1795447701.997987    9526 pjrt_api.cc:168] The PJRT plugin has PJRT API version 0.117. The framework PJRT API version is 0.117.
+I0000 00:00:1795447702.420467    9526 pjrt_c_api_client.cc:188] PjRtCApiClient created.
+/home/Tinevimbo/lab/batched_steering/device.py:42: UserWarning: //TorchTpu/ApiStage/ExperimentalApi// 'EagerMode' is experimental and subject to change: TPU eager execution mode configuration.
+  em = torch.tpu.EagerMode
+/home/Tinevimbo/lab/batched_steering/device.py:43: UserWarning: //TorchTpu/ApiStage/ExperimentalApi// set_eager_mode is experimental and subject to change: Context manager for setting the eager mode.
+  torch.tpu.set_eager_mode(em.DEFER_AND_FUSE if mode == "defer" else em.DEFER_NEVER)
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]I0000 00:00:1795447703.626336    9697 compilation_cache_utils.cc:220] Tier-3 compilation cache root directory: 
+I0000 00:00:1795447703.626366    9697 tier2_compilation_cache.cc:81] Tier-2 compilation cache is disabled for world size 1.
+Loading weights:   0%|          | 1/311 [00:00<00:42,  7.24it/s]Loading weights:   2%|▏         | 5/311 [00:00<00:21, 14.19it/s]Loading weights:   6%|▌         | 18/311 [00:00<00:06, 48.08it/s]Loading weights:  18%|█▊        | 55/311 [00:00<00:01, 136.67it/s]Loading weights:  25%|██▌       | 79/311 [00:00<00:01, 165.41it/s]Loading weights:  34%|███▍      | 106/311 [00:00<00:01, 186.50it/s]Loading weights:  42%|████▏     | 132/311 [00:00<00:00, 202.80it/s]Loading weights:  62%|██████▏   | 194/311 [00:01<00:00, 319.49it/s]Loading weights:  74%|███████▎  | 229/311 [00:01<00:00, 297.46it/s]Loading weights:  96%|█████████▋| 300/311 [00:01<00:00, 396.52it/s]Loading weights: 100%|██████████| 311/311 [00:01<00:00, 237.36it/s]
+[setup] device=tpu dtype=torch.float32 eager=strict layers=28 d=1024
+/home/Tinevimbo/venv/lib/python3.12/site-packages/torch/nn/modules/module.py:1798: FutureWarning: `past_key_values` is deprecated and will be removed in version 5.40.0 for `Qwen3ForCausalLM.forward`. Use `cache` instead.
+  return forward_call(*args, **kwargs)
+[e3] sad chunk 10
+[e3] sad chunk 20
+[e3] sad chunk 30
+[e3] sad chunk 40
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]Loading weights: 100%|██████████| 105/105 [00:00<00:00, 23890.74it/s]
+[e3] sad search: {'configs': 1000, 'rows': 12000, 'generate_s': 317.4386, 'damage_s': 70.8765, 'score_s': 140.5973, 'configs_per_s': 3.1502}
+[e3] random chunk 50
+[e3] random chunk 60
+[e3] random chunk 70
+[e3] random chunk 80
+[e3] random chunk 90
+[e3] random search: {'configs': 1000, 'rows': 12000, 'generate_s': 309.4193, 'damage_s': 71.5896, 'score_s': 140.2184, 'configs_per_s': 3.2319}
+[e3] winner_40: {'direction_layer': 14, 'strength': 0.6721, 'blocks': [4, 16], 'mood': 0.9008, 'facts': 0.85, 'kl': 0.0594} -> test mood +0.90
+[e3] winner_all: {'direction_layer': 13, 'strength': 0.3587, 'blocks': [6, 25], 'mood': 0.8242, 'facts': 0.825, 'kl': 0.0418} -> test mood +0.87
+[e3] hand-picked on test: mood +0.34 KL 0.024
+[e3] mean tune->test mood drop over 40 rechecked trials: +0.053
+[e3] random-direction search: best tune mood +0.01
+[e3] done
+I0000 00:00:1795448801.471312    9526 compilation_cache.cc:356] Compilation cache evicted.
+I0000 00:00:1795448801.471359    9526 compilation_cache.cc:211] CompilationCache final stats: num_cache_reqs=12558507
+num_cache_hits=12558032 {99.9%}
+num_compilations=475
+num_unbounded_dynamic_hits=0
+peak_compilation_memory_bytes=unknown
+

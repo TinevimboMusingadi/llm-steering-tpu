@@ -1,0 +1,9 @@
+STEP_START m2strict 16:14:42 :: python experiments/m2_batched_vs_loop.py --batch 256 --eager strict
+STEP_END m2strict OK 106s
+[m2] {'rows': 264, 'match_rate': 1.0, 'loop_s': 61.2324, 'batched_s': 13.9534, 'speedup': 4.3883}
+[m2] PASS
+STEP_START m2defer 16:16:28 :: python experiments/m2_batched_vs_loop.py --batch 256 --eager defer --tag defer
+STEP_END m2defer OK 103s
+[m2] {'rows': 264, 'match_rate': 1.0, 'loop_s': 58.8555, 'batched_s': 13.3803, 'speedup': 4.3987}
+[m2] PASS
+ALL_DONE
