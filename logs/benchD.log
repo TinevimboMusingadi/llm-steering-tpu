@@ -1,0 +1,38 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1795588762.971033    8671 pjrt_api.cc:119] GetPjrtApi was found for TPU at /home/Tinevimbo/venv/lib/python3.12/site-packages/libtpu/libtpu.so
+I0000 00:00:1795588764.277553    8671 device_rt.cc:178] PjRt runtime initialization deferred for tpu
+Successfully renamed PrivateUse1 backend to 'tpu'. Device: device(type='tpu')
+Registered Python module for 'tpu'.
+Device type: tpu, Device index: default
+Initializing TPU distributed runtime
+I0000 00:00:1795588764.279033    8671 libtpu_version.cc:63] Setting libtpu version to: 0.0.53.1
+I0000 00:00:1795588765.234192    8671 pjrt_api.cc:168] The PJRT plugin has PJRT API version 0.117. The framework PJRT API version is 0.117.
+I0000 00:00:1795588765.677254    8671 pjrt_c_api_client.cc:188] PjRtCApiClient created.
+/home/Tinevimbo/lab/batched_steering/device.py:42: UserWarning: //TorchTpu/ApiStage/ExperimentalApi// 'EagerMode' is experimental and subject to change: TPU eager execution mode configuration.
+  em = torch.tpu.EagerMode
+/home/Tinevimbo/lab/batched_steering/device.py:43: UserWarning: //TorchTpu/ApiStage/ExperimentalApi// set_eager_mode is experimental and subject to change: Context manager for setting the eager mode.
+  torch.tpu.set_eager_mode(em.DEFER_AND_FUSE if mode == "defer" else em.DEFER_NEVER)
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]I0000 00:00:1795588766.863600    8842 compilation_cache_utils.cc:220] Tier-3 compilation cache root directory: 
+I0000 00:00:1795588766.863632    8842 tier2_compilation_cache.cc:81] Tier-2 compilation cache is disabled for world size 1.
+Loading weights:   0%|          | 1/311 [00:00<00:46,  6.65it/s]Loading weights:   2%|▏         | 5/311 [00:00<00:22, 13.72it/s]Loading weights:   5%|▌         | 17/311 [00:00<00:06, 44.38it/s]Loading weights:  14%|█▎        | 42/311 [00:00<00:02, 104.36it/s]Loading weights:  44%|████▎     | 136/311 [00:00<00:00, 349.16it/s]Loading weights:  61%|██████    | 190/311 [00:00<00:00, 394.74it/s]Loading weights:  82%|████████▏ | 256/311 [00:00<00:00, 455.45it/s]Loading weights:  98%|█████████▊| 306/311 [00:01<00:00, 446.59it/s]Loading weights: 100%|██████████| 311/311 [00:01<00:00, 300.22it/s]
+[setup] device=tpu dtype=torch.float32 eager=strict layers=28 d=1024
+/home/Tinevimbo/venv/lib/python3.12/site-packages/torch/nn/modules/module.py:1798: FutureWarning: `past_key_values` is deprecated and will be removed in version 5.40.0 for `Qwen3ForCausalLM.forward`. Use `cache` instead.
+  return forward_call(*args, **kwargs)
+[bench] A loop: {'configs': 8, 'seconds': 38.9216, 'configs_per_s': 0.2055}
+[bench] warm-up: {'seconds': 27.9689, 'backend': 'tpu', 'unique_graphs': 1, 'frames_ok': 1}
+/home/Tinevimbo/venv/lib/python3.12/site-packages/torch/nn/modules/module.py:1798: FutureWarning: `past_key_values` is deprecated and will be removed in version 5.40.0 for `Qwen3ForCausalLM.forward`. Use `cache` instead.
+  return forward_call(*args, **kwargs)
+[bench] D_batched_compiled: {'configs': 8, 'rows': 96, 'seconds': 3.8153, 'configs_per_s': 2.0968, 'speedup_vs_loop': 10.2036, 'new_graphs': 0}
+[bench] D_batched_compiled: {'configs': 32, 'rows': 384, 'seconds': 7.4523, 'configs_per_s': 4.294, 'speedup_vs_loop': 20.8953, 'new_graphs': 0}
+[bench] D_batched_compiled: {'configs': 64, 'rows': 768, 'seconds': 11.2408, 'configs_per_s': 5.6936, 'speedup_vs_loop': 27.7059, 'new_graphs': 0}
+[bench] D_batched_compiled: {'configs': 128, 'rows': 1536, 'seconds': 22.3648, 'configs_per_s': 5.7233, 'speedup_vs_loop': 27.8505, 'new_graphs': 0}
+[bench] D_batched_compiled: {'configs': 224, 'rows': 2688, 'seconds': 41.0686, 'configs_per_s': 5.4543, 'speedup_vs_loop': 26.5415, 'new_graphs': 0}
+[bench] zero new graphs after warm-up: True
+[bench] done
+I0000 00:00:1795588933.511770    8671 compilation_cache.cc:356] Compilation cache evicted.
+I0000 00:00:1795588933.511803    8671 compilation_cache.cc:211] CompilationCache final stats: num_cache_reqs=989735
+num_cache_hits=989098 {99.9%}
+num_compilations=637
+num_unbounded_dynamic_hits=0
+peak_compilation_memory_bytes=unknown
+

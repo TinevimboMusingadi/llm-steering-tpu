@@ -1,0 +1,43 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1795588307.245466    4354 pjrt_api.cc:119] GetPjrtApi was found for TPU at /home/Tinevimbo/venv/lib/python3.12/site-packages/libtpu/libtpu.so
+I0000 00:00:1795588308.492411    4354 device_rt.cc:178] PjRt runtime initialization deferred for tpu
+Successfully renamed PrivateUse1 backend to 'tpu'. Device: device(type='tpu')
+Registered Python module for 'tpu'.
+Device type: tpu, Device index: default
+Initializing TPU distributed runtime
+I0000 00:00:1795588308.493878    4354 libtpu_version.cc:63] Setting libtpu version to: 0.0.53.1
+I0000 00:00:1795588309.599798    4354 pjrt_api.cc:168] The PJRT plugin has PJRT API version 0.117. The framework PJRT API version is 0.117.
+I0000 00:00:1795588310.028807    4354 pjrt_c_api_client.cc:188] PjRtCApiClient created.
+/home/Tinevimbo/lab/batched_steering/device.py:42: UserWarning: //TorchTpu/ApiStage/ExperimentalApi// 'EagerMode' is experimental and subject to change: TPU eager execution mode configuration.
+  em = torch.tpu.EagerMode
+/home/Tinevimbo/lab/batched_steering/device.py:43: UserWarning: //TorchTpu/ApiStage/ExperimentalApi// set_eager_mode is experimental and subject to change: Context manager for setting the eager mode.
+  torch.tpu.set_eager_mode(em.DEFER_AND_FUSE if mode == "defer" else em.DEFER_NEVER)
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]I0000 00:00:1795588321.546950    4535 compilation_cache_utils.cc:220] Tier-3 compilation cache root directory: 
+I0000 00:00:1795588321.546985    4535 tier2_compilation_cache.cc:81] Tier-2 compilation cache is disabled for world size 1.
+Loading weights:   2%|▏         | 5/311 [00:00<00:20, 14.63it/s]Loading weights:   5%|▌         | 17/311 [00:00<00:06, 45.21it/s]Loading weights:  22%|██▏       | 69/311 [00:00<00:01, 173.12it/s]Loading weights:  40%|████      | 125/311 [00:00<00:00, 281.93it/s]Loading weights:  71%|███████   | 221/311 [00:00<00:00, 436.42it/s]Loading weights:  90%|████████▉ | 279/311 [00:00<00:00, 471.96it/s]Loading weights: 100%|██████████| 311/311 [00:00<00:00, 314.03it/s]
+[setup] device=tpu dtype=torch.float32 eager=strict layers=28 d=1024
+[e4] directions in 1.2s; norms L8/L14/L20: 0.5 / 4.1 / 53.0
+/home/Tinevimbo/venv/lib/python3.12/site-packages/torch/nn/modules/module.py:1798: FutureWarning: `past_key_values` is deprecated and will be removed in version 5.40.0 for `Qwen3ForCausalLM.forward`. Use `cache` instead.
+  return forward_call(*args, **kwargs)
+[e4] baseline refusal: {'harmful_train': 0.375, 'harmless_train': 0.0, 'harmful_test': 0.4375, 'harmless_test': 0.0}
+[e4] induce chunk 10
+[e4] induce chunk 20
+[e4] induce chunk 30
+[e4] induce: {'configs': 280, 'rows': 8960, 'generate_s': 169.4365, 'damage_s': 20.5151, 'configs_per_s': 1.6525}
+[e4] remove chunk 40
+[e4] remove chunk 50
+[e4] remove: {'configs': 112, 'rows': 3584, 'generate_s': 68.2558, 'damage_s': 8.4842, 'configs_per_s': 1.6409}
+[e4] test induce: {'configs': 3, 'rows': 96, 'generate_s': 4.7644, 'damage_s': 0.4548, 'configs_per_s': 0.6297}
+[e4] test remove: {'configs': 3, 'rows': 96, 'generate_s': 4.986, 'damage_s': 0.4663, 'configs_per_s': 0.6017}
+[e4] baseline: harmful 0.44 / harmless 0.00 refused (test)
+[e4] induce winner L12 x3: train 0.22 -> test refusal 0.34, random 0.00, shuffled 0.00
+[e4] remove winner L25 x0.5: train 0.00 (KL 0.005) -> test refusal 0.03 (KL 0.005), random 0.22 (KL 0.032), shuffled 0.28 (KL 0.238)
+[e4] done
+I0000 00:00:1795588626.277692    4354 compilation_cache.cc:356] Compilation cache evicted.
+I0000 00:00:1795588626.277727    4354 compilation_cache.cc:211] CompilationCache final stats: num_cache_reqs=4914913
+num_cache_hits=4914549 {99.9%}
+num_compilations=364
+num_unbounded_dynamic_hits=0
+peak_compilation_memory_bytes=unknown
+

@@ -1,0 +1,31 @@
+STEP_START e4 06:31:44 :: python experiments/e4_refusal.py --batch 256
+STEP_END e4 OK 323s
+[e4] remove chunk 50
+[e4] remove: {'configs': 112, 'rows': 3584, 'generate_s': 68.2558, 'damage_s': 8.4842, 'configs_per_s': 1.6409}
+[e4] test induce: {'configs': 3, 'rows': 96, 'generate_s': 4.7644, 'damage_s': 0.4548, 'configs_per_s': 0.6297}
+[e4] test remove: {'configs': 3, 'rows': 96, 'generate_s': 4.986, 'damage_s': 0.4663, 'configs_per_s': 0.6017}
+[e4] baseline: harmful 0.44 / harmless 0.00 refused (test)
+[e4] induce winner L12 x3: train 0.22 -> test refusal 0.34, random 0.00, shuffled 0.00
+[e4] remove winner L25 x0.5: train 0.00 (KL 0.005) -> test refusal 0.03 (KL 0.005), random 0.22 (KL 0.032), shuffled 0.28 (KL 0.238)
+[e4] done
+STEP_START e5 06:37:07 :: python experiments/e5_mix.py --batch 256
+STEP_END e5 OK 133s
+[e5] test: {'configs': 53, 'rows': 1272, 'generate_s': 30.5235, 'score_s': 13.4452, 'configs_per_s': 1.7364}
+[e5] choose sad L12 + tomato L18: none mood +0.53 tom 0.00 | sad x2 -0.19/0.00 | tomato x10 +0.54/0.44 | both +0.15/0.39
+[e5] choose sad L17 + tomato L17 spread 2: none mood +0.57 tom 0.00 | sad x2 -0.08/0.00 | tomato x10 +0.68/0.31 | both -0.06/0.36
+[e5] choose sanity: push -0.13, remove +0.48, push+remove at L12 +0.55
+[e5] test sad L12 + tomato L18: none mood +0.55 tom 0.00 | sad x2 -0.16/0.00 | tomato x10 +0.53/0.50 | both +0.27/0.46
+[e5] test sad L17 + tomato L17 spread 2: none mood +0.56 tom 0.00 | sad x2 -0.21/0.00 | tomato x10 +0.64/0.29 | both -0.06/0.33
+[e5] test sanity: push -0.17, remove +0.44, push+remove at L12 +0.57
+[e5] done
+STEP_START benchD 06:39:20 :: env TORCH_LOGS=recompiles python experiments/bench_abc.py --compile
+STEP_END benchD OK 174s
+[bench] warm-up: {'seconds': 27.9689, 'backend': 'tpu', 'unique_graphs': 1, 'frames_ok': 1}
+[bench] D_batched_compiled: {'configs': 8, 'rows': 96, 'seconds': 3.8153, 'configs_per_s': 2.0968, 'speedup_vs_loop': 10.2036, 'new_graphs': 0}
+[bench] D_batched_compiled: {'configs': 32, 'rows': 384, 'seconds': 7.4523, 'configs_per_s': 4.294, 'speedup_vs_loop': 20.8953, 'new_graphs': 0}
+[bench] D_batched_compiled: {'configs': 64, 'rows': 768, 'seconds': 11.2408, 'configs_per_s': 5.6936, 'speedup_vs_loop': 27.7059, 'new_graphs': 0}
+[bench] D_batched_compiled: {'configs': 128, 'rows': 1536, 'seconds': 22.3648, 'configs_per_s': 5.7233, 'speedup_vs_loop': 27.8505, 'new_graphs': 0}
+[bench] D_batched_compiled: {'configs': 224, 'rows': 2688, 'seconds': 41.0686, 'configs_per_s': 5.4543, 'speedup_vs_loop': 26.5415, 'new_graphs': 0}
+[bench] zero new graphs after warm-up: True
+[bench] done
+ALL_DONE

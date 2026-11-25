@@ -7,8 +7,11 @@ BatchedSteer: one forward hook on EVERY block. Each batch row b carries its own 
     ablate[b]          how much of it to remove (0 = none, 1 = fully)
     layer_mask[b] [L]  1.0 on the blocks to edit, 0 elsewhere
     prompt_scale[b]    1 = also edit prompt tokens, 0 = only generated tokens
+    vec2, strength2, layer_mask2, prompt_scale2: a second push with its own blocks and positions (mixing two
+                       directions, e.g. sad on every token at L12 + tomato on generated tokens at L18). Zero = off.
     token_mask    [B,T] 1 on real prompt tokens, 0 on left padding (prefill only)
 
+The removal sees the pushed state (h + pushes), the same order as SingleSteer's hooks (pushes registered first).
 No Python branching per row, and all buffers are allocated once and updated in place with .copy_(), so the
 compiler sees the same tensors every sweep. Prefill vs decode is told apart by the sequence length (static).
 
@@ -26,14 +29,17 @@ def _split(out):
 
 
 class BatchedSteer:
-    KEYS = ("vec", "unit", "strength", "ablate", "layer_mask", "prompt_scale")
+    KEYS = ("vec", "unit", "strength", "ablate", "layer_mask", "prompt_scale",
+            "vec2", "strength2", "layer_mask2", "prompt_scale2")
 
     def __init__(self, layers, batch_size: int, d_model: int, device, dtype=torch.float32):
         self.layers, self.B, self.d, self.device = layers, batch_size, d_model, device
         L = len(layers)
         z = lambda *s: torch.zeros(*s, device=device, dtype=dtype)
         self.cfg = dict(vec=z(batch_size, d_model), unit=z(batch_size, d_model), strength=z(batch_size),
-                        ablate=z(batch_size), layer_mask=z(batch_size, L), prompt_scale=z(batch_size))
+                        ablate=z(batch_size), layer_mask=z(batch_size, L), prompt_scale=z(batch_size),
+                        vec2=z(batch_size, d_model), strength2=z(batch_size), layer_mask2=z(batch_size, L),
+                        prompt_scale2=z(batch_size))
         self.token_mask = None  # [B, T_prompt], set per prompt bucket
         self.enabled = True
         self.handles = [blk.register_forward_hook(self._hook(i)) for i, blk in enumerate(layers)]
@@ -80,20 +86,22 @@ class BatchedSteer:
                 return out
             h, pack = _split(out)                                          # [B, T, d]
             c = self.cfg
-            m = c["layer_mask"][:, i]                                      # [B]
+            m, m2 = c["layer_mask"][:, i], c["layer_mask2"][:, i]           # [B]
             T = h.shape[1]
             if T > 1:                                                      # prefill: prompt tokens
-                tm = self.token_mask if self.token_mask is not None and self.token_mask.shape[1] == T \
-                    else torch.ones(h.shape[:2], device=h.device, dtype=m.dtype)
+                tm = self.token_mask if self.token_mask is not None and self.token_mask.shape[1] == T                     else torch.ones(h.shape[:2], device=h.device, dtype=m.dtype)
                 pos = c["prompt_scale"][:, None] * tm                      # [B, T]
+                pos2 = c["prompt_scale2"][:, None] * tm
             else:                                                          # decode: one generated token
-                pos = torch.ones_like(m)[:, None]                          # [B, 1]
+                pos = pos2 = torch.ones_like(m)[:, None]                   # [B, 1]
             w_push = (c["strength"] * m)[:, None] * pos                    # [B, T]
+            w_push2 = (c["strength2"] * m2)[:, None] * pos2                # [B, T]
             w_abl = (c["ablate"] * m)[:, None] * pos                       # [B, T]
             u = c["unit"][:, None, :]                                      # [B, 1, d]
             hf = h.float() if h.dtype != c["vec"].dtype else h
-            coef = (hf * u).sum(-1)                                        # [B, T]
-            delta = w_push[..., None] * c["vec"][:, None, :] - (w_abl * coef)[..., None] * u
+            push = w_push[..., None] * c["vec"][:, None, :] + w_push2[..., None] * c["vec2"][:, None, :]
+            coef = ((hf + push) * u).sum(-1)                               # [B, T]
+            delta = push - (w_abl * coef)[..., None] * u
             return pack(h + delta.to(h.dtype))
         return hook
 

@@ -44,3 +44,23 @@
   - B Strict: 1.20 (8 configs) → 2.49 (32) → **3.36 (64)** → 3.28 (128) → 3.08 (224) configs/s.
   - C DeferAndFuse: 1.28 → 2.48 → 3.22 → 3.21 → 3.13.
   - The speed-up saturates at ~15× once a batch is full (256 rows = 21 configs × 12 prompts); B and C are within noise.
+
+## 2026-11-24/25: stretch round, E4 refusal, E5 mixing, mode D (third spot v5e-1, us-east1-c, fp32 Strict)
+- **Core: second push slot.** `BatchedSteer` gained `vec2/strength2/layer_mask2/prompt_scale2`, set from `Config.extra=[Config(...)]`. One row can now hold sad on every token at one block plus tomato on generated tokens at others. The removal term now sees the pushed state (h + pushes), the same order as `SingleSteer`'s hooks. Old configs give identical tensors. New CPU test: 8/8 pass. On TPU (greedy fp32, `scripts/check_mix_compile.py`): mixed rows batched == loop **29/30**, and the one miss splits at char 104 of 110 (late fp32 drift, as in M2).
+- **Gotcha: CRLF.** Python `Path.write_text` on Windows wrote `run_vm.sh` with CRLF and bash on the VM refused it (`$'do\r'`). All edited files were converted back to LF.
+- **E4 refusal direction** (harmful − harmless mean at the last prompt token, 64 + 64 hand-written requests, half to choose / half to test; string-match refusal score on the first 160 chars):
+  - Baseline: explicit refusals on harmful requests are only 0.38 (train) / 0.44 (test), 0.00 on harmless. Qwen3-0.6B often just complies, and soft "this is a serious violation…" lectures don't count as refusals.
+  - Induce (push on harmless, 28 layers × 5 strengths): a band at L16–20. Peak **0.91 at L20 2×**, but facts 0.85 → 0.13, KL 2.9. With KL < 0.2 the best is L12 3×: 0.22 train → 0.34 test. Random/shuffled at the same setting: 0.00. Random max over the whole map: 0.12.
+  - Remove (project out the layer-L direction after every block, ×0.5 / ×1): taking the direction from L ≥ 14 takes refusals to ~0. Winner L25 ×0.5: 0.00 train, KL 0.005 → **0.03 on test** (random 0.22, shuffled 0.28, no edit 0.44).
+  - 392 configs, 12.5k replies, ~4.5 min including fact damage.
+  - Ablated harmful replies are saved as 60 chars only.
+- **E5 mixing sad + tomato** (two pairings × 5 × 5 strengths + 3 sanity rows, choose 36 / test 24 topics):
+  - cos(sad, tomato) ≈ 0 (+0.02 at L12, +0.04 at L18).
+  - Tomato survives sad (tomato interaction ≈ 0: −0.04 / +0.08).
+  - **Sad does not survive tomato.** Test L12+L18: sad 2× alone −0.16, tomato 10× alone +0.53, both **+0.27**. The mean mood interaction is +0.24 / +0.20 (mixed is happier than additive). Possible causes: the topic shifts to food, or the larger tomato push dominates the residual stream; equal-norm pushes would separate them.
+  - Sanity: sad 2× + removal at the same block = +0.57 (no edit +0.55, push alone −0.17), so it cancels.
+- **Mode D: decode step under `torch.compile(backend="tpu", dynamic=False)`.** It needed `cache_position` passed as a slice of a preallocated device tensor (no Python-int counter).
+  - Warm-up 28 s, 1 graph, then **0 new graphs** over 5 sweep sizes.
+  - Peak **5.72 configs/s, 1.7× mode B, ~28× the loop**. Unlike DeferAndFuse, compile pays off.
+  - **Not bit-exact:** compiled vs eager greedy **24/30** identical on heavily steered rows, and splits start as early as char 5 (different fused arithmetic flips near-tied argmaxes). Use B for exact equivalence checks and D for throughput.
+- Results backed up to the private GCS bucket (run-2026-11-24). VM deleted.

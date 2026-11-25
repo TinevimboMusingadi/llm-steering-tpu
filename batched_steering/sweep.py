@@ -24,16 +24,29 @@ class Config:
     layers: tuple[int, ...] = ()          # 1-indexed blocks to edit
     gen_only: bool = False                # push only on generated tokens (tomato)
     meta: dict = field(default_factory=dict)
+    extra: list = field(default_factory=list)  # at most one more push (vec/strength/layers/gen_only), e.g. sad + tomato
 
 
 def row_tensors(configs: list[Config | None], n_layers: int, d: int) -> dict[str, torch.Tensor]:
     """Steering buffers for one chunk of rows (None = dummy row)."""
     B = len(configs)
     t = dict(vec=torch.zeros(B, d), unit=torch.zeros(B, d), strength=torch.zeros(B), ablate=torch.zeros(B),
-             layer_mask=torch.zeros(B, n_layers), prompt_scale=torch.zeros(B))
+             layer_mask=torch.zeros(B, n_layers), prompt_scale=torch.zeros(B),
+             vec2=torch.zeros(B, d), strength2=torch.zeros(B), layer_mask2=torch.zeros(B, n_layers),
+             prompt_scale2=torch.zeros(B))
     for b, c in enumerate(configs):
         if c is None:
             continue
+        if c.extra:
+            if len(c.extra) > 1 or c.extra[0].unit is not None or c.extra[0].extra:
+                raise ValueError(f"{c.name}: extra holds at most one plain push (no removal)")
+            e = c.extra[0]
+            if e.vec is not None:
+                t["vec2"][b] = e.vec.float()
+                t["strength2"][b] = e.strength
+            for L in e.layers:
+                t["layer_mask2"][b, L - 1] = 1.0
+            t["prompt_scale2"][b] = 0.0 if e.gen_only else 1.0
         if c.vec is not None:
             t["vec"][b] = c.vec.float()
             t["strength"][b] = c.strength
@@ -49,7 +62,8 @@ def row_tensors(configs: list[Config | None], n_layers: int, d: int) -> dict[str
 class Sweep:
     """Owns one BatchedSteer (+ Generator per prompt bucket) and runs configs x prompts through them."""
 
-    def __init__(self, lm, batch_size: int = 256, n_new: int = 60, temperature: float = 0.5):
+    def __init__(self, lm, batch_size: int = 256, n_new: int = 60, temperature: float = 0.5,
+                 compile_backend: str | None = None):
         import os
         if (lm.device.type == "tpu" and lm.dtype == torch.bfloat16 and batch_size > 128
                 and not os.environ.get("STEER_ALLOW_BIG_BF16")):
@@ -59,6 +73,7 @@ class Sweep:
             print(f"[sweep] bf16 on TPU: capping batch {batch_size} -> 128 (known issue, docs/LOG.md)", flush=True)
             batch_size = 128
         self.lm, self.B, self.N, self.temperature = lm, batch_size, n_new, temperature
+        self.compile_backend = compile_backend
         self.steer = BatchedSteer(lm.layers, batch_size, lm.d_model, lm.device)
         self.steer.enabled = False          # hooks only act inside this Sweep's own calls
         self._gens: dict[int, Generator] = {}
@@ -69,7 +84,7 @@ class Sweep:
 
     def _gen(self, T: int) -> Generator:
         if T not in self._gens:
-            self._gens[T] = Generator(self.lm, self.B, T, self.N)
+            self._gens[T] = Generator(self.lm, self.B, T, self.N, self.compile_backend)
         return self._gens[T]
 
     def _chunks(self, configs, n_prompts):

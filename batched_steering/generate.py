@@ -21,21 +21,26 @@ def sample(logits: torch.Tensor, temperature: float) -> torch.Tensor:
 class Generator:
     """Reusable generator for a fixed (batch, prompt length, n_new): owns the static cache and the mask buffer."""
 
-    def __init__(self, lm, batch_size: int, prompt_len: int, n_new: int):
+    def __init__(self, lm, batch_size: int, prompt_len: int, n_new: int, compile_backend: str | None = None):
         self.lm, self.B, self.T, self.N = lm, batch_size, prompt_len, n_new
         self.max_len = prompt_len + n_new
         self.cache = StaticCache(config=lm.model.config, max_cache_len=self.max_len)
         self.mask = torch.zeros(batch_size, self.max_len, dtype=torch.long, device=lm.device)
         self.tokens = torch.zeros(batch_size, n_new, dtype=torch.long, device=lm.device)
+        # cache positions as device tensors (not Python ints), so a compiled decode step sees the same program every step
+        self.cache_pos = torch.arange(self.max_len, device=lm.device)
+        self.step = self.decode_step
+        if compile_backend:   # mode D: compile only the 1-token decode step (prefill stays eager)
+            self.step = torch.compile(self.decode_step, backend=compile_backend, dynamic=False)
 
-    def _forward(self, ids, pos):
-        out = self.lm.model(input_ids=ids, attention_mask=self.mask, position_ids=pos,
+    def _forward(self, ids, pos, cache_pos):
+        out = self.lm.model(input_ids=ids, attention_mask=self.mask, position_ids=pos, cache_position=cache_pos,
                             past_key_values=self.cache, use_cache=True, logits_to_keep=1)
         return out.logits[:, -1]
 
-    def decode_step(self, nxt, pos):
-        """One generated token for every row. Kept as its own method so it can be torch.compile'd (M3)."""
-        return self._forward(nxt[:, None], pos)
+    def decode_step(self, nxt, pos, cache_pos):
+        """One generated token for every row. Kept as its own method so it can be torch.compile'd (mode D)."""
+        return self._forward(nxt[:, None], pos, cache_pos)
 
     @torch.no_grad()
     def __call__(self, input_ids, attention_mask, position_ids, temperature: float = 0.5) -> torch.Tensor:
@@ -44,7 +49,7 @@ class Generator:
         self.cache.reset()
         self.mask.zero_()
         self.mask[:, :T] = attention_mask
-        logits = self._forward(input_ids, position_ids)            # prefill
+        logits = self._forward(input_ids, position_ids, self.cache_pos[:T])   # prefill
         pos = position_ids[:, -1:] + 1                               # [B, 1]
         for i in range(self.N):
             nxt = sample(logits, temperature)
@@ -52,7 +57,7 @@ class Generator:
             if i == self.N - 1:
                 break
             self.mask[:, T + i] = 1
-            logits = self.decode_step(nxt, pos)
+            logits = self.step(nxt, pos, self.cache_pos[T + i:T + i + 1])
             pos = pos + 1
         return self.tokens.clone()
 

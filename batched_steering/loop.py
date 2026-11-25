@@ -10,9 +10,10 @@ from .sweep import Config
 
 
 def apply(s: SingleSteer, c: Config):
-    if c.vec is not None and c.strength != 0:
-        for L in c.layers:
-            s.add(L, c.strength * c.vec.float(), gen_only=c.gen_only)
+    for p in (c, *c.extra):                                   # pushes first, then the removal sees the pushed state
+        if p.vec is not None and p.strength != 0:
+            for L in p.layers:
+                s.add(L, p.strength * p.vec.float(), gen_only=p.gen_only)
     if c.unit is not None and c.ablate != 0:
         s.remove_dir(c.unit.float(), c.ablate, list(c.layers))
 

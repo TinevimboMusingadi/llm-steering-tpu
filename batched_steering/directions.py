@@ -85,3 +85,21 @@ def tomato_direction(lm) -> torch.Tensor:
     from .data.tomato_sentences import OTHERS, TARGET, TEMPLATES
     fill = lambda w: [t.format(w) for t in TEMPLATES]
     return mean_acts(lm, fill(TARGET)) - torch.stack([mean_acts(lm, fill(w)) for w in OTHERS]).mean(0)
+
+
+def prompt_last_acts(lm, prompts: list[str]) -> torch.Tensor:
+    """Residual stream at the last token of each chat-formatted prompt (the end of the assistant header, where the
+    model decides how to answer). -> (N, L+1, d)"""
+    return torch.stack([h[:, -1] for h in _hidden(lm, [chat(lm.tok, p) for p in prompts])])
+
+
+def refusal_acts(lm, harmful=None, harmless=None):
+    """(harmful_acts, harmless_acts) at the last prompt token, each (N, L+1, d). Default: the train halves."""
+    from .data.refusal_prompts import HARMFUL_TRAIN, HARMLESS_TRAIN
+    return prompt_last_acts(lm, harmful or HARMFUL_TRAIN), prompt_last_acts(lm, harmless or HARMLESS_TRAIN)
+
+
+def refusal_direction(lm) -> torch.Tensor:
+    """Harmful mean - harmless mean at the last prompt token: (L+1, d). Adding it should make the model refuse."""
+    bad, ok = refusal_acts(lm)
+    return bad.mean(0) - ok.mean(0)

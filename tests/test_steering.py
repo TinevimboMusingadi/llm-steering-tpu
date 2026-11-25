@@ -138,3 +138,28 @@ def test_buffers_are_reused(lm):
     st.load(strength=torch.zeros(4))
     assert ptrs == {k: v.data_ptr() for k, v in st.cfg.items()}
     st.remove()
+
+
+def test_two_pushes_and_removal_match_loop(lm):
+    """Mixing (E5): a push on all tokens + a decode-only push at other blocks, and push + removal together."""
+    from batched_steering.loop import apply
+    v1, v2, r = _vec(lm, 1), _vec(lm, 2, 4.0), _vec(lm, 3)
+    configs = [
+        Config("mix", vec=v1, strength=1.0, layers=(2,), extra=[Config(vec=v2, strength=2.0, layers=(3, 4), gen_only=True)]),
+        Config("mix same block", vec=v1, strength=-1.0, layers=(1,), extra=[Config(vec=v2, strength=1.5, layers=(1,))]),
+        Config("push + remove", vec=v1, strength=1.0, unit=r, ablate=0.7, layers=(2, 3)),
+        Config("removal only + extra push", unit=r, ablate=1.0, layers=(1, 2), extra=[Config(vec=v1, strength=1.0, layers=(2,))]),
+    ]
+    sw = Sweep(lm, batch_size=8, n_new=N_NEW, temperature=0)
+    try:
+        batched = sw.generate(configs, PROMPTS)
+    finally:
+        sw.close()
+    for c, got in zip(configs, batched):
+        assert got == decode(lm.tok, _single_tokens(lm, PROMPTS, lambda s, c=c: apply(s, c))), c.name
+    single = Sweep(lm, batch_size=8, n_new=N_NEW, temperature=0)
+    try:
+        alone = single.generate([Config("v1 only", vec=v1, strength=1.0, layers=(2,))], PROMPTS)[0]
+    finally:
+        single.close()
+    assert batched[0] != alone, "the extra push should change the text"

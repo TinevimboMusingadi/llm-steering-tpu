@@ -1,0 +1,36 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1795589149.198566   15335 pjrt_api.cc:119] GetPjrtApi was found for TPU at /home/Tinevimbo/venv/lib/python3.12/site-packages/libtpu/libtpu.so
+I0000 00:00:1795589150.448565   15335 device_rt.cc:178] PjRt runtime initialization deferred for tpu
+Successfully renamed PrivateUse1 backend to 'tpu'. Device: device(type='tpu')
+Registered Python module for 'tpu'.
+Device type: tpu, Device index: default
+Initializing TPU distributed runtime
+I0000 00:00:1795589150.449955   15335 libtpu_version.cc:63] Setting libtpu version to: 0.0.53.1
+I0000 00:00:1795589152.456793   15363 pjrt_api.cc:168] The PJRT plugin has PJRT API version 0.117. The framework PJRT API version is 0.117.
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]I0000 00:00:1795589152.945003   15363 pjrt_c_api_client.cc:188] PjRtCApiClient created.
+Loading weights:   0%|          | 1/311 [00:00<03:58,  1.30it/s]I0000 00:00:1795589153.266016   15505 compilation_cache_utils.cc:220] Tier-3 compilation cache root directory: 
+I0000 00:00:1795589153.266047   15505 tier2_compilation_cache.cc:81] Tier-2 compilation cache is disabled for world size 1.
+Loading weights:   2%|▏         | 5/311 [00:01<00:51,  5.92it/s]Loading weights:   5%|▌         | 17/311 [00:01<00:12, 23.28it/s]Loading weights:   9%|▉         | 29/311 [00:01<00:06, 40.56it/s]Loading weights:  24%|██▍       | 75/311 [00:01<00:01, 125.49it/s]Loading weights:  49%|████▉     | 153/311 [00:01<00:00, 272.17it/s]Loading weights:  74%|███████▍  | 230/311 [00:01<00:00, 392.67it/s]Loading weights:  93%|█████████▎| 288/311 [00:01<00:00, 428.64it/s]Loading weights: 100%|██████████| 311/311 [00:01<00:00, 187.94it/s]
+/home/Tinevimbo/venv/lib/python3.12/site-packages/torch/nn/modules/module.py:1798: FutureWarning: `past_key_values` is deprecated and will be removed in version 5.40.0 for `Qwen3ForCausalLM.forward`. Use `cache` instead.
+  return forward_call(*args, **kwargs)
+[check] mix  sad L12 x2 + tomato L18 x10            batched == loop: 6/6
+[check] mix  sad L17 x1.5 + tomato L17-18 x12.3     batched == loop: 5/6
+[check] mix  sad L12 x2 + remove                    batched == loop: 6/6
+[check] mix  remove refusal L25 x0.5                batched == loop: 6/6
+[check] mix  induce refusal L20 x2                  batched == loop: 6/6
+[check] mix total 29/30
+[check] compile == eager: 24/30
+[check] mix differs: sad L17 x1.5 + tomato L17-18 x12.3: same for the first 104 of 110 chars
+[check] compile differs: sad L12 x2 + tomato L18 x10: same for the first 74 of 135 chars
+[check] compile differs: sad L12 x2 + tomato L18 x10: same for the first 13 of 90 chars
+[check] compile differs: sad L17 x1.5 + tomato L17-18 x12.3: same for the first 37 of 155 chars
+[check] compile differs: sad L12 x2 + remove: same for the first 71 of 109 chars
+[check] compile differs: induce refusal L20 x2: same for the first 95 of 197 chars
+[check] compile differs: induce refusal L20 x2: same for the first 5 of 102 chars
+I0000 00:00:1795589201.149149   15335 compilation_cache.cc:356] Compilation cache evicted.
+I0000 00:00:1795589201.149182   15335 compilation_cache.cc:211] CompilationCache final stats: num_cache_reqs=545958
+num_cache_hits=545260 {99.8%}
+num_compilations=698
+num_unbounded_dynamic_hits=0
+peak_compilation_memory_bytes=unknown
+

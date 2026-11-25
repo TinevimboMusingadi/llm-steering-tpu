@@ -1,0 +1,40 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1795588629.685637    6317 pjrt_api.cc:119] GetPjrtApi was found for TPU at /home/Tinevimbo/venv/lib/python3.12/site-packages/libtpu/libtpu.so
+I0000 00:00:1795588630.944506    6317 device_rt.cc:178] PjRt runtime initialization deferred for tpu
+Successfully renamed PrivateUse1 backend to 'tpu'. Device: device(type='tpu')
+Registered Python module for 'tpu'.
+Device type: tpu, Device index: default
+Initializing TPU distributed runtime
+I0000 00:00:1795588630.945966    6317 libtpu_version.cc:63] Setting libtpu version to: 0.0.53.1
+I0000 00:00:1795588631.896646    6317 pjrt_api.cc:168] The PJRT plugin has PJRT API version 0.117. The framework PJRT API version is 0.117.
+I0000 00:00:1795588632.372313    6317 pjrt_c_api_client.cc:188] PjRtCApiClient created.
+/home/Tinevimbo/lab/batched_steering/device.py:42: UserWarning: //TorchTpu/ApiStage/ExperimentalApi// 'EagerMode' is experimental and subject to change: TPU eager execution mode configuration.
+  em = torch.tpu.EagerMode
+/home/Tinevimbo/lab/batched_steering/device.py:43: UserWarning: //TorchTpu/ApiStage/ExperimentalApi// set_eager_mode is experimental and subject to change: Context manager for setting the eager mode.
+  torch.tpu.set_eager_mode(em.DEFER_AND_FUSE if mode == "defer" else em.DEFER_NEVER)
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights:   0%|          | 1/311 [00:00<00:35,  8.76it/s]I0000 00:00:1795588633.567842    6488 compilation_cache_utils.cc:220] Tier-3 compilation cache root directory: 
+I0000 00:00:1795588633.567873    6488 tier2_compilation_cache.cc:81] Tier-2 compilation cache is disabled for world size 1.
+Loading weights:   2%|▏         | 5/311 [00:00<00:21, 14.09it/s]Loading weights:   5%|▌         | 17/311 [00:00<00:06, 44.65it/s]Loading weights:  12%|█▏        | 37/311 [00:00<00:03, 89.30it/s]Loading weights:  29%|██▉       | 91/311 [00:00<00:01, 219.60it/s]Loading weights:  43%|████▎     | 135/311 [00:00<00:00, 280.67it/s]Loading weights:  70%|███████   | 219/311 [00:00<00:00, 403.39it/s]Loading weights:  86%|████████▌ | 268/311 [00:01<00:00, 396.40it/s]Loading weights: 100%|██████████| 311/311 [00:01<00:00, 289.08it/s]
+[setup] device=tpu dtype=torch.float32 eager=strict layers=28 d=1024
+[e5] cos(sad, tomato) L6/L12/L17/L18/L24: -0.016 / +0.017 / +0.066 / +0.036 / -0.044
+/home/Tinevimbo/venv/lib/python3.12/site-packages/torch/nn/modules/module.py:1798: FutureWarning: `past_key_values` is deprecated and will be removed in version 5.40.0 for `Qwen3ForCausalLM.forward`. Use `cache` instead.
+  return forward_call(*args, **kwargs)
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]Loading weights: 100%|██████████| 105/105 [00:00<00:00, 22947.16it/s]
+[e5] choose: {'configs': 53, 'rows': 1908, 'generate_s': 51.8237, 'score_s': 22.6869, 'configs_per_s': 1.0227}
+[e5] test chunk 10
+[e5] test: {'configs': 53, 'rows': 1272, 'generate_s': 30.5235, 'score_s': 13.4452, 'configs_per_s': 1.7364}
+[e5] choose sad L12 + tomato L18: none mood +0.53 tom 0.00 | sad x2 -0.19/0.00 | tomato x10 +0.54/0.44 | both +0.15/0.39
+[e5] choose sad L17 + tomato L17 spread 2: none mood +0.57 tom 0.00 | sad x2 -0.08/0.00 | tomato x10 +0.68/0.31 | both -0.06/0.36
+[e5] choose sanity: push -0.13, remove +0.48, push+remove at L12 +0.55
+[e5] test sad L12 + tomato L18: none mood +0.55 tom 0.00 | sad x2 -0.16/0.00 | tomato x10 +0.53/0.50 | both +0.27/0.46
+[e5] test sad L17 + tomato L17 spread 2: none mood +0.56 tom 0.00 | sad x2 -0.21/0.00 | tomato x10 +0.64/0.29 | both -0.06/0.33
+[e5] test sanity: push -0.17, remove +0.44, push+remove at L12 +0.57
+[e5] done
+I0000 00:00:1795588759.498950    6317 compilation_cache.cc:356] Compilation cache evicted.
+I0000 00:00:1795588759.498984    6317 compilation_cache.cc:211] CompilationCache final stats: num_cache_reqs=1434376
+num_cache_hits=1433890 {99.9%}
+num_compilations=486
+num_unbounded_dynamic_hits=0
+peak_compilation_memory_bytes=unknown
+

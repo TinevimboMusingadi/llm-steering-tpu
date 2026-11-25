@@ -35,6 +35,9 @@ The notebook will:
 | E2 | tomato map + 1,000-trial search |
 | E3 | removal search, 1,000 trials, winner's curse |
 | Bench | A loop / B Strict / C DeferAndFuse |
+| E4 | refusal direction: induce, remove, controls (stretch) |
+| E5 | mixing sad + tomato in one row (stretch) |
+| Bench D | decode step under torch.compile (stretch) |
 
 At the end it downloads `results.zip`. Drop that zip into the lab repo folder.
 Answer key and data: [avbiswas/learn-mech-interp](https://github.com/avbiswas/learn-mech-interp) (MIT)."""),
@@ -79,7 +82,13 @@ cells += [
     md("## 10. Benchmark: A loop vs B batched Strict vs C batched DeferAndFuse"),
     code(RUN + "bench_abc.py --eager strict"),
     code(RUN + "bench_abc.py --eager defer"),
-    md("## 11. Download results"),
+    md("## 11. Stretch: E4 refusal direction (induce on harmless, remove on harmful, controls, train -> test)"),
+    code(RUN + "e4_refusal.py --batch 256"),
+    md("## 12. Stretch: E5 mixing sad + tomato in the same row"),
+    code(RUN + "e5_mix.py --batch 256"),
+    md("## 13. Stretch: mode D, decode step under torch.compile (counts new graphs after warm-up)"),
+    code("%cd /content/lab\n!TORCH_LOGS=recompiles STEER_RESULTS=/content/lab/results python -u experiments/bench_abc.py --compile"),
+    md("## 14. Download results"),
     code("!cd /content/lab && zip -qr /content/results.zip results\nfrom google.colab import files\nfiles.download('/content/results.zip')"),
 ]
 
